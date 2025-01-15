@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import searchRoute from './routes/searchRoute';
 
-require('dotenv').config();
+require 
+('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
