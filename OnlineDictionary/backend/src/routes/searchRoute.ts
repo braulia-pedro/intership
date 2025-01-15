@@ -3,60 +3,53 @@ import axios from 'axios';
 
 const router = express.Router();
 
-async function buscarPalavra(palavra: string): Promise<any> {
-  const url = `https://pt.wiktionary.org/w/api.php?action=query&format=json&prop=revisions&titles=${palavra}&rvprop=content`;
+async function fetchWord(word: string): Promise<any> {
+  const url = `https://pt.wiktionary.org/w/api.php?action=query&format=json&prop=revisions&titles=${word}&rvprop=content`;
   try {
-    const resposta = await axios.get(url);
-    return resposta.data;
-  } catch (erro: any) {
-    console.error(`Erro ao buscar a palavra "${palavra}":`, erro.message);
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Erro ao buscar a palavra "${word}":`, error.message);
     throw new Error('Erro ao consultar a API do Wiktionary');
   }
 }
 
-router.get('/:palavra', async (req: Request, res: Response) => {
-  const { palavra } = req.params;
+router.get('/:word', async (req: Request, res: Response) => {
+  const { word } = req.params;
 
   try {
-    const dadosBrutos = await buscarPalavra(palavra);
-    const dadosFormatados = processarDadosWiktionary(dadosBrutos, palavra);
-    res.json(dadosFormatados);
+    const rawData = await fetchWord(word);
+    const formattedData  = processarDadosWiktionary(rawData, word);
+    res.json(formattedData );
   } catch (erro: any) {
     res.status(500).json({ error: erro.message });
   }
 });
 
-function processarDadosWiktionary(dadosBrutos: any, palavra: string) {
-  const paginas = dadosBrutos?.query?.pages;
-  const idPagina = Object.keys(paginas || {})[0];
-  const conteudo = paginas?.[idPagina]?.revisions?.[0]?.['*'];
+function processarDadosWiktionary(rawData: any, word: string) {
+  const pages = rawData?.query?.pages;
+  const pageId = Object.keys(pages || {})[0];
+  const content = pages?.[pageId]?.revisions?.[0]?.['*'];
 
-  if (!conteudo) {
-    return { palavra, mensagem: 'Nenhum resultado encontrado.' };
+  if (!content) {
+    return { word, message: 'Nenhum resultado encontrado.' };
   }
 
-  const limparTexto = (texto: string) => texto.replace(/\[\[(.*?)\]\]/g, '$1');
+  const cleanText = (text: string) => text.replace(/\[\[(.*?)\]\]/g, '$1');
+  const definitions = content.match(/# (.*?)\n/g)?.map((definitions: string) => cleanText(definitions.replace(/# /, '').trim())) || [];
+  const synonyms = content.match(/===Sinônimos===\n([\s\S]*?)\n===/s)?.[1]?.split('\n')
+    .filter((synonyms: string) => synonyms.startsWith('*'))
+    .map((synonyms: string) => cleanText(synonyms.replace('*', '').trim())) || [];
 
-  const definicoes = conteudo.match(/# (.*?)\n/g)?.map((definicao: string) => limparTexto(definicao.replace(/# /, '').trim())) || [];
-
-  const sinonimos = conteudo.match(/===Sinônimos===\n([\s\S]*?)\n===/s)?.[1]?.split('\n')
-    .filter((sinonimo: string) => sinonimo.startsWith('*'))
-    .map((sinonimo: string) => limparTexto(sinonimo.replace('*', '').trim())) || [];
-
-  const exemplos = conteudo.match(/===Exemplos===\n([\s\S]*?)\n===/s)?.[1]?.split('\n')
-    .filter((exemplo: string) => exemplo.startsWith('*'))
-    .map((exemplo: string) => limparTexto(exemplo.replace('*', '').trim())) || [];
-
-  const expressoes = conteudo.match(/===Expressões===\n([\s\S]*?)\n===/s)?.[1]?.split('\n')
-    .filter((expressao: string) => expressao.startsWith('*'))
-    .map((expressao: string) => limparTexto(expressao.replace('*', '').trim())) || [];
+  const expressions = content.match(/===Expressões===\n([\s\S]*?)\n===/s)?.[1]?.split('\n')
+    .filter((expressions: string) => expressions.startsWith('*'))
+    .map((expressions: string) => cleanText(expressions.replace('*', '').trim())) || [];
 
   return {
-    palavra,
-    definicoes,
-    sinonimos,
-    exemplos,
-    expressoes,
+    word,
+    definitions,
+    synonyms,
+    expressions,
   };
 }
 

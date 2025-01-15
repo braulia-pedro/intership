@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
-import { FaBookOpen, FaLightbulb, FaCalendarDay } from "react-icons/fa";
+import {FaBookOpen, FaLightbulb, FaCalendarDay} from "react-icons/fa";
 
 export default function Curiosity() {
   const sections = [
     {
-      titulo: "Origem de Palavras",
+      title: "Origem de Palavras",
       icon: <FaBookOpen className="text-blue-600 w-8 h-8" />,
-      conteudo:
+      content:
         "A palavra 'entusiasmo' vem do grego 'enthousiasmos', que significa estar cheio de inspiração divina.",
     },
     {
-      titulo: "Dicas de Gramática",
+      title: "Dicas de Gramática",
       icon: (
         <div className="relative flex justify-center items-center">
           <FaLightbulb className="text-yellow-500 w-8 h-8 mt-4" />
@@ -23,13 +23,13 @@ export default function Curiosity() {
           </div>
         </div>
       ),
-      conteudo:
+      content:
         "Atenção ao uso de 'há' e 'a': Use 'há' para tempo passado ('há dois anos') e 'a' para distância ou futuro ('daqui a duas horas').",
     },
     {
-      titulo: "Palavra do Dia",
+      title: "Palavra do Dia",
       icon: <FaCalendarDay className="text-green-600 w-8 h-8" />,
-      conteudo:
+      content:
         "Serendipidade: A descoberta por acaso de algo valioso. Use em uma frase hoje!",
     },
   ];
@@ -46,8 +46,8 @@ export default function Curiosity() {
             className="flex flex-col items-center text-center p-4 border rounded-lg bg-white shadow-sm"
           >
             <div className="mb-4">{section.icon}</div>
-            <h3 className="text-xl font-semibold text-gray-700">{section.titulo}</h3>
-            <p className="text-gray-600 mt-2">{section.conteudo}</p>
+            <h3 className="text-xl font-semibold text-gray-700">{section.title}</h3>
+            <p className="text-gray-600 mt-2">{section.content}</p>
           </div>
         ))}
       </div>

@@ -1,9 +1,10 @@
 "use client";
 import React from 'react';
-import Header from "./components/Header";
-import Search from "./components/Search"
-import Footer from "./components/Footer";
-import Curiosity from './components/Curiosity';
+import Header from "@/app/components/header";
+import Search from "@/app/components/search"
+import Footer from "@/app/components/footer";
+import Curiosity from "@/app/components/curiosity";
+import Favorites from "@/app/components/favorites.tsx";
 
 export default function Home() {
   return (
@@ -11,7 +12,6 @@ export default function Home() {
       <Header />
       <main className="flex-1 px-24 py-8 space-y-8">
         <Search />
-
         <Curiosity />
       </main>
       <Footer />
